@@ -10,13 +10,12 @@ class Subject;
 template<class Type>
 class Observer 
 {
+friend class Subject<Type>;
+
 private:
 	Type state;
 	unsigned int id;
 	Subject<Type>* subject;
-
-public:
-	void (*Delegate)();
 
 	void SetSubject(Subject<Type>* sbj) {
 		subject = sbj;
@@ -45,6 +44,9 @@ public:
 		}
 	}
 
+public:
+	void (*Delegate)();
+
 	Type GetState() {
 		return state;
 	}
@@ -55,9 +57,17 @@ public:
 template<class Type>
 class Subject
 {
+friend class Observer<Type>;
+
 private:
 	Type state;
 	std::vector<Observer<Type>*> observers;
+
+	void Notify() {
+		for(auto observer : observers) {
+			observer->Update();
+		}
+	}
 
 public:
 	void AddObserver(Observer<Type>* obs) {
@@ -77,12 +87,6 @@ public:
 		}
 	}
   
-	void Notify() {
-		for(auto observer : observers) {
-			observer->Update();
-		}
-	}
-
 	Type GetState() {
 		return state;
 	}
