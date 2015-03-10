@@ -31,21 +31,16 @@ private:
 
 	void Update() {
 		state = subject->GetState();
-		if (Delegate != NULL) {
-			Delegate();
-		}
+		if (Delegate != NULL)
+			Delegate(state);
 	}
 
 	bool operator==(const Observer* rvalue) {
-		if (this->id == rvalue->GetId()) {
-			return true;	
-		} else {
-			return false;
-		}
+		return this->id == rvalue->GetId() ? true : false;
 	}
 
 public:
-	void (*Delegate)();
+	void (*Delegate)(Type state);
 
 	Type GetState() {
 		return state;
@@ -64,9 +59,8 @@ private:
 	std::vector<Observer<Type>*> observers;
 
 	void Notify() {
-		for(auto observer : observers) {
+		for(auto observer : observers) 
 			observer->Update();
-		}
 	}
 
 public:
