@@ -2,93 +2,44 @@
 #define OBSERVER_H
 
 #include <vector>
+#include <functional>
 
-//forward declaration
-template<class Type>
-class Subject;
-
-template<class Type>
-class Observer 
+template<class StateT>
+class SubjectPosta
 {
-friend class Subject<Type>;
-
-private:
-	Type state;
-	unsigned int id;
-	Subject<Type>* subject;
-
-	void SetSubject(Subject<Type>* sbj) {
-		subject = sbj;
-	}
-
-	void SetId(const unsigned int idParam) {
-		id = idParam;
-	}
-
-	unsigned int GetId() {
-		return id;
-	}
-
-	void Update() {
-		state = subject->GetState();
-		if (Delegate != NULL)
-			Delegate(state);
-	}
-
-	bool operator==(const Observer* rvalue) {
-		return this->id == rvalue->GetId() ? true : false;
-	}
-
 public:
-	void (*Delegate)(Type state);
-
-	Type GetState() {
-		return state;
+    typedef std::function<void (StateT)> fn_callback_t;
+    
+    void Notify() {
+    	for(auto observer : _observers) 
+			observer(_state);
+	}
+    
+    void AddObserver(fn_callback_t observer)
+    {
+    	_observers.push_back(observer);
 	}
 
-	Observer() : Delegate(NULL) {}
-};
-
-template<class Type>
-class Subject
-{
-friend class Observer<Type>;
-
-private:
-	Type state;
-	std::vector<Observer<Type>*> observers;
-
-	void Notify() {
-		for(auto observer : observers) 
-			observer->Update();
-	}
-
-public:
-	void AddObserver(Observer<Type>* obs) {
-		observers.push_back(obs);
-		obs->SetSubject(this);
-		obs->SetId(observers.size());
-	}
-
-	void RemoveObserver(Observer<Type>* obs) {
-		int iter = 0;
-		for(auto observer : observers) {
-			if (observer == obs) {
-				observers.erase(observers.begin()+iter);
+	void RemoveObserver(fn_callback_t observer) {    
+		for (auto it = _observers.begin(); it != _observers.end(); ++it) {
+			if (*it == observer) {
+				_observers.erase(it);
 				break;
 			}
-			iter++;
 		}
 	}
   
-	Type GetState() {
-		return state;
+	StateT GetState() {
+		return _state;
 	}
 	
-	void SetState(const Type stateParam) {
-		state = stateParam;
+	void SetState(const StateT stateParam) {
+		_state = stateParam;
 		Notify();
 	}
+private:
+    std::vector<fn_callback_t> _observers;
+    StateT _state;
 };
 
 #endif

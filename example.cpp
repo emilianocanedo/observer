@@ -1,39 +1,35 @@
 #include <iostream>
-#include "Observer.h"
+#include "observer.h"
 
-void ObserverHandler(int state)
+class Business
 {
-	std::cout << "I'm observer 3, and have this state: " << state << std::endl;
-}
+public:
+    Business(SubjectPosta<int>& subjectHola, SubjectPosta<int>& subjectChau)
+    {
+        subjectHola.AddObserver(std::bind(&Business::OnChangeSubjectHola, this, "Hola", std::placeholders::_1));
+        subjectChau.AddObserver(std::bind(&Business::OnChangeSubjectChau, this, "Chau", std::placeholders::_1));
+    }
+private:
+    void OnChangeSubjectHola(const char* subjectName, int state)
+    {
+        std::cout << "Subject changed " << subjectName << state << std::endl;
+    }
+    
+    void OnChangeSubjectChau(const char* subjectName, int state)
+    {
+        std::cout << "Subject changed " << subjectName << state << std::endl;
+    }
+};
 
 int main()
 {
-	Observer<int> *observer1 = new Observer<int>;
-	Observer<int> *observer2 = new Observer<int>;
-	Observer<int> *observer3 = new Observer<int>;
-
-	observer3->Delegate = ObserverHandler;
-
-	Subject<int> *subject1 = new Subject<int>;
-
-	subject1->AddObserver(observer1);
-	subject1->AddObserver(observer2);
-	subject1->AddObserver(observer3);
-
-	subject1->SetState(3);
-
-	std::cout << observer1->GetState() << " " << observer2->GetState() << " " << observer3->GetState() << std::endl;
-
-	subject1->RemoveObserver(observer2);
-
-	subject1->SetState(4);
-
-	std::cout << observer1->GetState() << " " << observer2->GetState() << " " << observer3->GetState() << std::endl;
-
-	delete observer1;
-	delete observer2;
-	delete observer3;
-	delete subject1;
+    SubjectPosta<int> subjectHola;
+    SubjectPosta<int> subjectChau;
+    
+    Business b(subjectHola, subjectChau);
+    
+    subjectHola.SetState(45);
+    subjectChau.Notify();
 
 	return 0;
 }
