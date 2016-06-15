@@ -31,5 +31,5 @@ int main()
     subjectHola.SetState(45);
     subjectChau.SetState(123);
 
-	return 0;
+    return 0;
 }
