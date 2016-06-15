@@ -4,7 +4,7 @@
 class Business
 {
 public:
-    Business(SubjectPosta<int>& subjectHola, SubjectPosta<int>& subjectChau)
+    Business(Subject<int>& subjectHola, Subject<int>& subjectChau)
     {
         subjectHola.AddObserver(std::bind(&Business::OnChangeSubjectHola, this, "Hola", std::placeholders::_1));
         subjectChau.AddObserver(std::bind(&Business::OnChangeSubjectChau, this, "Chau", std::placeholders::_1));
@@ -23,13 +23,13 @@ private:
 
 int main()
 {
-    SubjectPosta<int> subjectHola;
-    SubjectPosta<int> subjectChau;
+    Subject<int> subjectHola;
+    Subject<int> subjectChau;
     
     Business b(subjectHola, subjectChau);
     
     subjectHola.SetState(45);
-    subjectChau.Notify();
+    subjectChau.SetState(123);
 
 	return 0;
 }

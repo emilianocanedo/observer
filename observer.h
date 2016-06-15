@@ -5,7 +5,7 @@
 #include <functional>
 
 template<class StateT>
-class SubjectPosta
+class Subject
 {
 public:
     typedef std::function<void (StateT)> fn_callback_t;
@@ -28,15 +28,16 @@ public:
 			}
 		}
 	}
-  
+
 	StateT GetState() {
 		return _state;
 	}
-	
+
 	void SetState(const StateT stateParam) {
 		_state = stateParam;
 		Notify();
 	}
+
 private:
     std::vector<fn_callback_t> _observers;
     StateT _state;
